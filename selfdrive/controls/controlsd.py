@@ -68,6 +68,7 @@ class Controls:
       self.pm = messaging.PubMaster(['sendcan', 'controlsState', 'carState',
                                      'carControl', 'carEvents', 'carParams'])
 
+    self.sensor_packets = ["accelerometer", "gyroscope", "magnetometer"]
     self.camera_packets = ["roadCameraState", "driverCameraState", "wideRoadCameraState"]
 
     self.can_sock = can_sock
@@ -85,7 +86,8 @@ class Controls:
         ignore += ['driverCameraState', 'managerState']
       self.sm = messaging.SubMaster(['deviceState', 'pandaStates', 'peripheralState', 'modelV2', 'liveCalibration',
                                      'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
-                                     'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters', 'testJoystick'] + self.camera_packets,
+                                     'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters',
+                                     'testJoystick'] + self.camera_packets + self.sensor_packets,
                                     ignore_alive=ignore, ignore_avg_freq=['radarState', 'testJoystick'])
 
     if CI is None:
@@ -348,6 +350,8 @@ class Controls:
       self.events.add(EventName.canBusMissing)
     elif not CS.canValid:
       self.events.add(EventName.canError)
+    if not self.sm.all_checks(self.sensor_packets):
+      self.events.add(EventName.sensorDataInvalid)
 
     # generic catch-all. ideally, a more specific event should be added above instead
     can_rcv_timeout = self.can_rcv_timeout_counter >= 5
@@ -379,9 +383,6 @@ class Controls:
       self.events.add(EventName.posenetInvalid)
     if not self.sm['liveLocationKalman'].deviceStable:
       self.events.add(EventName.deviceFalling)
-    if not (self.sm['liveParameters'].sensorValid or self.sm['liveLocationKalman'].sensorsOK):
-      if self.sm.frame > 5 / DT_CTRL:  # Give locationd some time to receive sensor inputs
-        self.events.add(EventName.sensorDataInvalid)
     if not self.sm['liveLocationKalman'].inputsOK:
       self.events.add(EventName.locationdTemporaryError)
     if not self.sm['liveParameters'].valid and not TESTING_CLOSET and (not SIMULATION or REPLAY):
