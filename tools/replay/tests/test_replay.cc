@@ -137,27 +137,28 @@ std::string download_demo_route() {
 }
 
 
-TEST_CASE("Route") {
+TEST_CASE("Local route") {
   std::string data_dir = download_demo_route();
 
-  SECTION("Local route") {
-    auto flags = GENERATE(REPLAY_FLAG_DCAM | REPLAY_FLAG_ECAM, REPLAY_FLAG_QCAMERA);
-    Route route(DEMO_ROUTE, QString::fromStdString(data_dir));
-    REQUIRE(route.load());
-    REQUIRE(route.segments().size() == 2);
-    for (int i = 0; i < route.segments().size(); ++i) {
-      read_segment(i, route.at(i), flags);
-    }
-  };
-  SECTION("Remote route") {
-    auto flags = GENERATE(REPLAY_FLAG_DCAM | REPLAY_FLAG_ECAM, REPLAY_FLAG_QCAMERA);
-    Route route(DEMO_ROUTE);
-    REQUIRE(route.load());
-    REQUIRE(route.segments().size() == 13);
-    for (int i = 0; i < 2; ++i) {
-      read_segment(i, route.at(i), flags);
-    }
-  };
+  auto flags = GENERATE(REPLAY_FLAG_DCAM | REPLAY_FLAG_ECAM, REPLAY_FLAG_QCAMERA);
+  Route route(DEMO_ROUTE, QString::fromStdString(data_dir));
+  REQUIRE(route.load());
+  REQUIRE(route.segments().size() == 2);
+  for (int i = 0; i < route.segments().size(); ++i) {
+    read_segment(i, route.at(i), flags);
+  }
+}
+
+TEST_CASE("Remote route") {
+  std::string data_dir = download_demo_route();
+
+  auto flags = GENERATE(REPLAY_FLAG_DCAM | REPLAY_FLAG_ECAM, REPLAY_FLAG_QCAMERA);
+  Route route(DEMO_ROUTE);
+  REQUIRE(route.load());
+  REQUIRE(route.segments().size() == 13);
+  for (int i = 0; i < 2; ++i) {
+    read_segment(i, route.at(i), flags);
+  }
 }
 
 // helper class for unit tests
