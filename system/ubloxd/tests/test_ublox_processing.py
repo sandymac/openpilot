@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import pytest
 import unittest
 import time
 import numpy as np
@@ -31,6 +32,8 @@ def get_ublox_raw(log_reader):
       ublox_raw.append(msg)
   return ublox_raw
 
+
+@pytest.mark.setup_timeout(15)
 class TestUbloxProcessing(unittest.TestCase):
   NUM_TEST_PROCESS_MEAS = 10
 
