@@ -2,6 +2,7 @@
 import capnp
 import os
 import importlib
+import pytest
 import unittest
 from collections import defaultdict, Counter
 from typing import List, Optional, Tuple
@@ -68,6 +69,7 @@ def get_test_cases() -> List[Tuple[str, Optional[CarTestRoute]]]:
 
 
 
+@pytest.mark.setup_timeout(10)
 class TestCarModelBase(unittest.TestCase):
   car_model: Optional[str] = None
   test_route: Optional[CarTestRoute] = None
