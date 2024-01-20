@@ -130,8 +130,9 @@ struct InitData {
 
 struct FrameData {
   frameId @0 :UInt32;
-  encodeId @1 :UInt32; # DEPRECATED
   frameIdSensor @25 :UInt32;
+  requestId @28 :UInt32;
+  encodeId @1 :UInt32;
 
   frameType @7 :FrameType;
 
@@ -166,6 +167,7 @@ struct FrameData {
     unknown @0;
     ar0231 @1;
     ox03c10 @2;
+    os04c10 @3;
   }
 
   frameLengthDEPRECATED @3 :Int32;
@@ -408,7 +410,6 @@ struct DeviceState @0xa4d8b5af2aa492eb {
 
 struct PandaState @0xa7649e2575e4591e {
   ignitionLine @2 :Bool;
-  gasInterceptorDetected @4 :Bool;
   rxBufferOverflow @7 :UInt32;
   txBufferOverflow @8 :UInt32;
   gmlanSendErrs @9 :UInt32;
@@ -541,6 +542,7 @@ struct PandaState @0xa7649e2575e4591e {
     }
   }
 
+  gasInterceptorDetectedDEPRECATED @4 :Bool;
   startedSignalDetectedDEPRECATED @5 :Bool;
   hasGpsDEPRECATED @6 :Bool;
   fanSpeedRpmDEPRECATED @11 :UInt16;
@@ -666,7 +668,6 @@ struct ControlsState @0x97ff69c53601abf1 {
   aTarget @35 :Float32;
   curvature @37 :Float32;  # path curvature from vehicle model
   desiredCurvature @61 :Float32;  # lag adjusted curvatures used by lateral controllers
-  desiredCurvatureRate @62 :Float32;
   forceDecel @51 :Bool;
 
   # UI alerts
@@ -824,6 +825,7 @@ struct ControlsState @0x97ff69c53601abf1 {
   steerOverrideDEPRECATED @20 :Bool;
   steeringAngleDesiredDegDEPRECATED @29 :Float32;
   canMonoTimesDEPRECATED @21 :List(UInt64);
+  desiredCurvatureRateDEPRECATED @62 :Float32;
 }
 
 # All SI units and in device frame
@@ -2226,7 +2228,7 @@ struct Event {
     liveTorqueParameters @94 :LiveTorqueParametersData;
     cameraOdometry @63 :CameraOdometry;
     thumbnail @66: Thumbnail;
-    carEvents @68: List(Car.CarEvent);
+    onroadEvents @68: List(Car.CarEvent);
     carParams @69: Car.CarParams;
     driverMonitoringState @71: DriverMonitoringState;
     liveLocationKalman @72 :LiveLocationKalman;
